@@ -1,0 +1,242 @@
+Front_end.py
+import tkinter as tk
+from tkinter import ttk
+
+# Main window setup
+root = tk.Tk()
+root.title(&quot;Attendance Tracker&quot;)
+root.geometry(&quot;600x500&quot;)  # Adjusted size
+
+# Header section
+header_frame = tk.Frame(root, bg=&quot;navy&quot;, height=50)
+header_frame.pack(fill=tk.X)
+
+header_label = tk.Label(header_frame, text=&quot;Attendance Tracker&quot;, bg=&quot;navy&quot;,
+fg=&quot;white&quot;, font=(&quot;Arial&quot;, 20))
+header_label.pack(pady=10)
+
+# Student data for each class
+students_data = {
+    &quot;IT A&quot;: [&quot;23ITR001 JEEVASRUTHI S&quot;, &quot;23ITR002 KANIMOZHI S&quot;, &quot;23ITR003
+KRITHIKA S&quot;],
+    &quot;IT B&quot;: [&quot;23ITR004 KAVIYA B&quot;, &quot;23IT4005 MOWNISHA A&quot;, &quot;23ITR006 MYHTILI
+M&quot;],
+    &quot;IT C&quot;: [&quot;23ITR007 MEGAVARSHINI V&quot;, &quot;23ITR008 PREMISHA T&quot;, &quot;23ITR009
+PRIYANKA B&quot;]
+}
+
+# Dropdown section for Class, Section, and Subject
+dropdown_frame = tk.Frame(root, pady=20)
+dropdown_frame.pack()
+
+# Class Dropdown
+class_label = tk.Label(dropdown_frame, text=&quot;Class:&quot;)
+class_label.grid(row=0, column=0, padx=10)
+class_options = list(students_data.keys())
+class_dropdown = ttk.Combobox(dropdown_frame, values=class_options,
+state=&quot;readonly&quot;)
+class_dropdown.grid(row=0, column=1)
+
+# Section Dropdown
+sec_label = tk.Label(dropdown_frame, text=&quot;Session:&quot;)
+sec_label.grid(row=0, column=2, padx=10)
+section_options = [&quot;FN&quot;, &quot;AN&quot;, &quot;SC&quot;]
+sec_dropdown = ttk.Combobox(dropdown_frame, values=section_options,
+state=&quot;readonly&quot;)
+sec_dropdown.grid(row=0, column=3)
+
+# Subject Dropdown
+subject_label = tk.Label(dropdown_frame, text=&quot;Subject:&quot;)
+subject_label.grid(row=0, column=4, padx=10)
+subject_options = [&quot;ITC&quot;, &quot;MES&quot;, &quot;DSUJ&quot;, &quot;PYTHON&quot;, &quot;CO&quot;]
+subject_dropdown = ttk.Combobox(dropdown_frame, values=subject_options,
+state=&quot;readonly&quot;)
+subject_dropdown.grid(row=0, column=5)
+
+# Attendance table frame
+table_frame = tk.Frame(root, padx=20, pady=10)
+table_frame.pack()
+
+# Function to update the attendance table based on the selected class
+
+def update_table():
+    for widget in table_frame.winfo_children():
+        widget.destroy()
+
+    # Header for the table
+    tk.Label(table_frame, text=&quot;Name&quot;, font=(&quot;Arial&quot;, 12)).grid(row=0, column=0,
+padx=5, pady=5)
+    tk.Label(table_frame, text=&quot;Attendance&quot;, font=(&quot;Arial&quot;, 12)).grid(row=0, column=1,
+padx=5, pady=5)
+
+    selected_class = class_dropdown.get()
+    if selected_class in students_data:
+        names = students_data[selected_class]
+        attendance_vars.clear()
+
+        for i, name in enumerate(names):
+            # Student Name
+            tk.Label(table_frame, text=name).grid(row=i+1, column=0, padx=10, pady=5)
+
+            # Attendance Checkbox
+            var = tk.BooleanVar()
+            chk = tk.Checkbutton(table_frame, variable=var)
+            chk.grid(row=i+1, column=1)
+
+            # Store attendance status for later use
+            attendance_vars.append((name, var))
+
+class_dropdown.bind(&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;, lambda e: update_table())
+
+attendance_vars = []
+
+# Placeholder submit button (functionality can be added later)
+submit_button = tk.Button(root, text=&quot;Submit Attendance&quot;, bg=&quot;navy&quot;, fg=&quot;white&quot;)
+submit_button.pack(pady=20)
+
+root.mainloop()
+
+Attendance.py
+
+import tkinter as tk
+from tkinter import ttk
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# Main window setup
+root = tk.Tk()
+root.title(&quot;Attendance Tracker&quot;)
+root.geometry(&quot;600x500&quot;)
+
+# Email configuration
+SENDER_EMAIL = &quot;p05923527@gmail.com&quot;  # Replace with your email
+APP_PASSWORD = &quot;qbcm zuvd onte kxso&quot;  # Replace with your app password
+
+# Student data for each class with email addresses
+students_data = {
+    &quot;IT A&quot;: {
+        &quot;23ITR001 JEEVASHRUTHI S&quot;: &quot;jeevasruthis.23it@kongu.edu&quot;,
+        &quot;23ITR002 KANIMOZHI S&quot;: &quot;kanimozhis.23it@kongu.edu&quot;,
+
+        &quot;23ITR003 KRITHIKA S&quot;: &quot;krithikas.23it@kongu.edu&quot;
+    },
+    &quot;IT B&quot;: {
+        &quot;23ITR004 KAVIYA B&quot;: &quot;kaviyab.23it@kongu.edu&quot;,
+        &quot;23ITR005 MOWNISHA A&quot;: &quot;mownishaa.23it@kongu.edu&quot;,
+        &quot;23ITR006 MYTHILI M&quot;: &quot;mythilim.23it@kongu.edu&quot;
+    },
+    &quot;IT C&quot;: {
+        &quot;23ITR007 MEGAVARSHINI V&quot;: &quot;megavarshiniv.23it@kongu.edu&quot;,
+        &quot;23ITR008 PREMISHA T&quot;: &quot;premishat.23it@kongu.edu&quot;,
+        &quot;23ITR009 PRIYANKA B&quot;: &quot;priyankab.23it@kongu.edu&quot;
+    }
+}
+
+# Header section
+header_frame = tk.Frame(root, bg=&quot;navy&quot;, height=50)
+header_frame.pack(fill=tk.X)
+
+header_label = tk.Label(header_frame, text=&quot;Attendance Tracker&quot;, bg=&quot;navy&quot;,
+fg=&quot;white&quot;, font=(&quot;Arial&quot;, 20))
+header_label.pack(pady=10)
+
+# Dropdown section for Class, Section, and Subject
+dropdown_frame = tk.Frame(root, pady=20)
+dropdown_frame.pack()
+
+# Class Dropdown
+class_label = tk.Label(dropdown_frame, text=&quot;Class:&quot;)
+class_label.grid(row=0, column=0, padx=10)
+
+class_options = list(students_data.keys())
+class_dropdown = ttk.Combobox(dropdown_frame, values=class_options,
+state=&quot;readonly&quot;)
+class_dropdown.grid(row=0, column=1)
+
+# Section Dropdown
+sec_label = tk.Label(dropdown_frame, text=&quot;Session:&quot;)
+sec_label.grid(row=0, column=2, padx=10)
+section_options = [&quot;FN&quot;, &quot;AN&quot;, &quot;SC&quot;]
+sec_dropdown = ttk.Combobox(dropdown_frame, values=section_options,
+state=&quot;readonly&quot;)
+sec_dropdown.grid(row=0, column=3)
+
+# Subject Dropdown
+subject_label = tk.Label(dropdown_frame, text=&quot;Subject:&quot;)
+subject_label.grid(row=0, column=4, padx=10)
+subject_options = [&quot;ITC&quot;, &quot;MES&quot;, &quot;DSUJ&quot;, &quot;PYTHON&quot;, &quot;CO&quot;]
+subject_dropdown = ttk.Combobox(dropdown_frame, values=subject_options,
+state=&quot;readonly&quot;)
+subject_dropdown.grid(row=0, column=5)
+
+# Attendance table frame
+table_frame = tk.Frame(root, padx=20, pady=10)
+table_frame.pack()
+
+# Function to update the attendance table based on the selected class
+def update_table():
+    for widget in table_frame.winfo_children():
+        widget.destroy()
+
+    tk.Label(table_frame, text=&quot;Name&quot;, font=(&quot;Arial&quot;, 12)).grid(row=0, column=0,
+padx=5, pady=5)
+    tk.Label(table_frame, text=&quot;Attendance&quot;, font=(&quot;Arial&quot;, 12)).grid(row=0, column=1,
+padx=5, pady=5)
+
+    selected_class = class_dropdown.get()
+    if selected_class in students_data:
+        names = students_data[selected_class]
+        attendance_vars.clear()
+
+        for i, (name, email) in enumerate(names.items()):
+            tk.Label(table_frame, text=name).grid(row=i+1, column=0, padx=10, pady=5)
+            var = tk.BooleanVar()
+            chk = tk.Checkbutton(table_frame, variable=var)
+            chk.grid(row=i+1, column=1)
+            attendance_vars.append((name, email, var))
+
+class_dropdown.bind(&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;, lambda e: update_table())
+
+attendance_vars = []
+
+# Function to send attendance emails
+def send_email(name, email, status):
+    try:
+        msg = MIMEMultipart()
+        msg[&#39;From&#39;] = SENDER_EMAIL
+        msg[&#39;To&#39;] = email
+        msg[&#39;Subject&#39;] = f&quot;Attendance Notification for {name}&quot;
+        body = f&quot;Dear {name},\n\nYour attendance status is:
+{status}.\n\nRegards,\nAttendance Tracker&quot;
+
+        msg.attach(MIMEText(body, &#39;plain&#39;))
+
+        with smtplib.SMTP(&quot;smtp.gmail.com&quot;, 587) as server:
+            server.starttls()
+            server.login(SENDER_EMAIL, APP_PASSWORD)
+            server.sendmail(SENDER_EMAIL, email, msg.as_string())
+        print(f&quot;Email sent successfully to {name} ({email})!&quot;)
+    except Exception as e:
+        print(f&quot;Failed to send email to {name} ({email}):&quot;, e)
+
+# Submit and email attendance
+def submit_attendance():
+    selected_class = class_dropdown.get()
+    session = sec_dropdown.get()
+    subject = subject_dropdown.get()
+   
+    if not selected_class or not session or not subject:
+        print(&quot;Please select Class, Session, and Subject!&quot;)
+        return
+
+    # Send individual emails
+    for name, email, var in attendance_vars:
+        status = &quot;Present&quot; if var.get() else &quot;Absent&quot;
+        send_email(name, email, status)
+
+submit_button = tk.Button(root, text=&quot;Submit Attendance&quot;,
+command=submit_attendance, bg=&quot;navy&quot;, fg=&quot;white&quot;)
+submit_button.pack(pady=20)
+
+root.mainloop()
