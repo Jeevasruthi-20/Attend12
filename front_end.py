@@ -84,4 +84,3 @@ submit_button = tk.Button(root, text="Submit Attendance", bg="navy", fg="white")
 submit_button.pack(pady=20)
 
 root.mainloop()
-
